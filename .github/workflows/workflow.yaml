@@ -44,15 +44,9 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ColonesExchangeRate
-    - name: Setup NuGet for NuGet.org
-      uses: nuget/setup-nuget@v1
-      with:
-        nuget-api-key: ${{ secrets.NUGET_API_KEY }}
     - name: Publish to NuGet.org
-      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json
-    - name: Setup NuGet for GitHub Packages
-      uses: nuget/setup-nuget@v1
-      with:
-        nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+    - name: Authenticating to GitHub Packages
+      run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dsanchezcr/index.json"
     - name: Publish to GitHub Packages
-      run: dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/dsanchezcr/index.json
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
