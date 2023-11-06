@@ -1,0 +1,58 @@
+name: Build, Test and Deploy ColonesExchangeRate Package
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/**'
+  workflow_dispatch:
+jobs:
+  build-test:
+    name: Build & Test Solution
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    - name: Restore dependencies
+      run: dotnet restore src/ColonesExchangeRate.sln
+    - name: Build solution
+      run: dotnet build src/ColonesExchangeRate.sln --configuration Release
+    - name: Build package
+      run: dotnet pack src/ColonesExchangeRate/ColonesExchangeRate.csproj --configuration Release
+    - name: Run tests
+      run: dotnet test src/ColonesExchangeRate.Tests/ColonesExchangeRate.Tests.csproj --no-build --verbosity normal
+    - name: Upload package
+      uses: actions/upload-artifact@v3
+      with:
+        name: ColonesExchangeRate
+        path: '**/*.nupkg'
+  publish:
+    name: Publish package to NuGet and GitHub Packages
+    needs: build-test
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v3
+      with:
+        name: ColonesExchangeRate
+    - name: Setup NuGet for NuGet.org
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+    - name: Publish to NuGet.org
+      run: dotnet nuget push **/*.nupkg --source https://api.nuget.org/v3/index.json
+    - name: Setup NuGet for GitHub Packages
+      uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish to GitHub Packages
+      run: dotnet nuget push **/*.nupkg --source https://nuget.pkg.github.com/dsanchezcr/index.json

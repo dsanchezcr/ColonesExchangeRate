@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Colones Exchange Rate (Tipo de Cambio) - Costa Rica</Title>
+    <Authors>dsanchezcr</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <RepositoryUrl>https://github.com/dsanchezcr/ColonesExchangeRate</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageTags>colones; dollars; euros; currency-exchange; exchange-rate; costa-rica; CRC;</PackageTags>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/dsanchezcr/ColonesExchangeRate</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\images\Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+  </ItemGroup>
+
+</Project>
