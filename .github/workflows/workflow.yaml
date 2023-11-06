@@ -28,7 +28,7 @@ jobs:
     - name: Build package
       run: dotnet pack src/ColonesExchangeRate/ColonesExchangeRate.csproj --configuration Release
     - name: Run tests
-      run: dotnet test src/ColonesExchangeRate.Tests/ColonesExchangeRate.Tests.csproj --no-build --verbosity normal
+      run: dotnet test src/ColonesExchangeRate.Tests/ColonesExchangeRate.Tests.csproj
     - name: Upload package
       uses: actions/upload-artifact@v3
       with:
