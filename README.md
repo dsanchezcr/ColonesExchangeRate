@@ -3,7 +3,7 @@ This NuGet package is a .NET library based on .NET Standard 2.1 that provides fu
 
 [![ColonesExchangeRate - CI/CD](https://github.com/dsanchezcr/ColonesExchangeRate/actions/workflows/workflow.yaml/badge.svg)](https://github.com/dsanchezcr/ColonesExchangeRate/actions/workflows/workflow.yaml)
 
-![](images/Icon.png)
+![](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/Icon.png)
 
 # Information about the exchange rate
 This NuGet package consumes the exchange rate through an API from Ministerio de Hacienda de Costa Rica, you can access the API in the following link: https://api.hacienda.go.cr/indicadores/tc (The API is in Spanish). 
@@ -34,7 +34,7 @@ decimal eurosAColones = await converter.EurosToColones(amount);
 (DateTime? date, decimal dollars, decimal colones) euroExchangeRate = await converter.GetEuroExchangeRate(true);
 ```
 The result will look similar to this:
-![Console Result](images/ConsoleResult.jpg)
+![Console Result](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/ConsoleResult.jpg)
 
 > Note: Replace amount with the amount of currency you want to convert.
 
