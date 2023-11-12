@@ -6,6 +6,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ColonesExchangeRate\ColonesExchangeRate.csproj" />
+    <PackageReference Include="ColonesExchangeRate" Version="1.0.0" />
   </ItemGroup>
 </Project>
