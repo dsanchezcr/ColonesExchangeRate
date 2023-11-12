@@ -12,7 +12,7 @@ on:
       - '.github/**'
   workflow_dispatch:
 jobs:
-  build-test:
+  build-test-nuget:
     name: Build & Test Solution
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +36,8 @@ jobs:
         path: '**/*.nupkg'
   publish:
     name: Publish package to NuGet and GitHub Packages
-    needs: build-test
+    if: github.ref == 'refs/heads/main'
+    needs: build-test-nuget
     runs-on: ubuntu-latest
     environment: Production
     steps:
