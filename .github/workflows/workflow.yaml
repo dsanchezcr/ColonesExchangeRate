@@ -1,4 +1,5 @@
-name: Build, Test and Deploy ColonesExchangeRate Package
+name: Build, Test and Deploy Packages
+
 on:
   push:
     branches:
@@ -11,10 +12,17 @@ on:
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
+
+env:
+  npm-path: ./src/npm
+  nuget-sln-path: 'src/NuGet/ColonesExchangeRate.sln'
+  nuget-project-path: 'src/NuGet/ColonesExchangeRate/ColonesExchangeRate.csproj'
+  configuration: 'Release'
+
 jobs:
   build-test-nuget:
-    name: Build & Test Solution
-    runs-on: ubuntu-latest
+    name: Build & Test NuGet package
+    runs-on: ubuntu-latest      
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -22,19 +30,45 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     - name: Restore dependencies
-      run: dotnet restore src/ColonesExchangeRate.sln
+      run: dotnet restore ${{ env.nuget-sln-path }}
     - name: Build solution
-      run: dotnet build src/ColonesExchangeRate.sln --configuration Release
+      run: dotnet build ${{ env.nuget-sln-path }} --configuration ${{ env.configuration }}
     - name: Build package
-      run: dotnet pack src/ColonesExchangeRate/ColonesExchangeRate.csproj --configuration Release
+      run: dotnet pack ${{ env.nuget-project-path }} --configuration ${{ env.configuration }}
     - name: Run tests
-      run: dotnet test src/ColonesExchangeRate.Tests/ColonesExchangeRate.Tests.csproj
+      run: dotnet test ${{ env.nuget-sln-path }}
     - name: Upload package
       uses: actions/upload-artifact@v3
       with:
-        name: ColonesExchangeRate
+        name: NuGet
         path: '**/*.nupkg'
-  publish:
+        
+  build-test-npm:
+    name: Build & Test npm package
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+    - name: Install dependencies
+      working-directory: ${{ env.npm-path }}
+      run: npm ci
+    - name: Test
+      working-directory: ${{ env.npm-path }}
+      run: npm test      
+    - name: Prepare package
+      working-directory: ${{ env.npm-path }}
+      run: |
+        npm pack    
+    - name: Upload package
+      uses: actions/upload-artifact@v3
+      with:
+        name: npm
+        path: '**/*.tgz'
+
+  publish-nuget:
     name: Publish package to NuGet and GitHub Packages
     if: github.ref == 'refs/heads/main'
     needs: build-test-nuget
@@ -44,10 +78,40 @@ jobs:
     - name: Download package
       uses: actions/download-artifact@v3
       with:
-        name: ColonesExchangeRate
+        name: NuGet
     - name: Publish to NuGet.org
       run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
     - name: Authenticating to GitHub Packages
       run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dsanchezcr/index.json"
     - name: Publish to GitHub Packages
       run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+
+  publish-npm:
+    name: Publish package to npm and GitHub Packages
+    if: github.ref == 'refs/heads/main'
+    needs: build-test-npm
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v3
+      with:
+        name: npm
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+        registry-url: 'https://registry.npmjs.org'
+    - name: Publish to npm
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
+    - name: Set up Node.js for GitHub Packages
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+        registry-url: 'https://npm.pkg.github.com'
+    - name: Publish to GitHub Packages
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
