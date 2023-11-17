@@ -1,21 +1,20 @@
 # ColonesExchangeRate NuGet Package
-This NuGet package is a .NET library based on .NET Standard 2.1 that provides functionality for currency conversion from Colones (Costa Rica - CRC ₡) to Dollars (United States - USD $) and Euros (European Union - EUR €).
+This repository contains a NuGet & npm package to provide currency conversion from Colones (Costa Rica - CRC ₡) to Dollars (United States - USD $) and Euros (European Union - EUR €). It consumes the [API from Ministerio de Hacienda de Costa Rica](https://api.hacienda.go.cr/indicadores/tc) (The API is in Spanish).
 
 [![ColonesExchangeRate - CI/CD](https://github.com/dsanchezcr/ColonesExchangeRate/actions/workflows/workflow.yaml/badge.svg)](https://github.com/dsanchezcr/ColonesExchangeRate/actions/workflows/workflow.yaml)
 
 ![](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/Icon.png)
 
-# Information about the exchange rate
-This NuGet package consumes the exchange rate through an API from Ministerio de Hacienda de Costa Rica, you can access the API in the following link: https://api.hacienda.go.cr/indicadores/tc (The API is in Spanish). 
-
 # Installation
-You can install the ColonesExchangeRate NuGet package using NuGet or GitHub Packages.
+You can install the ColonesExchangeRate package from [NuGet.org](https://www.nuget.org/packages/ColonesExchangeRate), [npmjs.com](https://www.npmjs.com/settings/dsanchezcr/packages) or [GitHub Packages](https://github.com/dsanchezcr?tab=packages&repo_name=ColonesExchangeRate).
 
+
+## NuGet Package
 To install ColonesExchangeRate using NuGet, run the following command in the Package Manager Console:
 ```dotnetcli
 Install-Package ColonesExchangeRate
 ```
-# Usage
+### Usage
 To use ColonesExchangeRate, first create an instance of the CurrencyConverter class:
 
 ```csharp
@@ -35,6 +34,37 @@ decimal eurosAColones = await converter.EurosToColones(amount);
 ```
 The result will look similar to this:
 ![Console Result](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/ConsoleResult.jpg)
+
+> Note: Replace amount with the amount of currency you want to convert.
+
+The GetDollarExchangeRate and GetEuroExchangeRate methods return a tuple with three values: the date of the exchange rate, the sale rate, and the purchase rate.
+
+## npm Package
+
+To install ColonesExchangeRate using npm, run the following command in the Package Manager Console:
+```cli
+npm install @dsanchezcr/colones-exchange-rate
+```
+
+### Usage
+
+To use ColonesExchangeRate, first import the CurrencyConverter class:
+```javascript
+import { CurrencyConverter } from '@dsanchezcr/colones-exchange-rate';
+```
+Then, you can use the following methods to perform currency conversion:
+```javascript
+const converter = new CurrencyConverter();
+const dolaresAColones = await converter.DollarsToColones(amount);
+const colonesADolares = await converter.ColonesToDollars(amount);
+const dolaresAEuros = await converter.DollarsToEuros(amount);
+const eurosADolares = await converter.EurosToDollars(amount);
+const colonesAEuros = await converter.ColonesToEuros(amount);
+const eurosAColones = await converter.EurosToColones(amount);
+// true or false to get the date as part of the exchange rate information.
+const dollarExchangeRate = await converter.GetDollarExchangeRate(true);
+const euroExchangeRate = await converter.GetEuroExchangeRate(true);
+```
 
 > Note: Replace amount with the amount of currency you want to convert.
 
