@@ -15,8 +15,8 @@ on:
 
 env:
   npm-path: ./src/npm
-  nuget-sln-path: 'src/Nuget/ColonesExchangeRate.sln'
-  nuget-project-path: 'src/Nuget/ColonesExchangeRate/ColonesExchangeRate.csproj'
+  nuget-sln-path: 'src/NuGet/ColonesExchangeRate.sln'
+  nuget-project-path: 'src/NuGet/ColonesExchangeRate/ColonesExchangeRate.csproj'
   configuration: 'Release'
 
 jobs:
