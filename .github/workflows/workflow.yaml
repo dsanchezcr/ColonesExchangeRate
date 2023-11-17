@@ -61,7 +61,7 @@ jobs:
     - name: Prepare package
       run: |
         mkdir -p package
-        cp -r * package
+        find . -maxdepth 1 -name '*' ! -name 'package' -exec cp -r {} package \;
         rm -rf package/node_modules
     - name: Upload package
       uses: actions/upload-artifact@v3
