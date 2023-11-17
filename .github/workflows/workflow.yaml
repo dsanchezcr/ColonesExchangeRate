@@ -21,7 +21,7 @@ env:
 
 jobs:
   build-test-nuget:
-    name: Build & Test Solution
+    name: Build & Test NuGet package
     runs-on: ubuntu-latest      
     steps:
     - uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
     - name: Build solution
       run: dotnet build ${{ env.nuget-sln-path }} --configuration ${{ env.configuration }}
     - name: Build package
-      run: dotnet pack s${{ env.nuget-project-path }} --configuration ${{ env.configuration }}
+      run: dotnet pack ${{ env.nuget-project-path }} --configuration ${{ env.configuration }}
     - name: Run tests
       run: dotnet test ${{ env.nuget-sln-path }}
     - name: Upload package
@@ -60,7 +60,8 @@ jobs:
       working-directory: ${{ env.npm-path }}
     - name: Prepare package
       run: |
-        cp -r . package
+        mkdir -p package
+        cp -r * package
         rm -rf package/node_modules
     - name: Upload package
       uses: actions/upload-artifact@v3
