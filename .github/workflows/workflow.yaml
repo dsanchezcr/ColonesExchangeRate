@@ -103,7 +103,9 @@ jobs:
         node-version: 'latest'
         registry-url: 'https://registry.npmjs.org'
     - name: Publish to npm
-      run: npm publish --access public
+      run: |
+        cd npm
+        npm publish *.tgz
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
     - name: Set up Node.js for GitHub Packages
@@ -112,6 +114,8 @@ jobs:
         node-version: 'latest'
         registry-url: 'https://npm.pkg.github.com'
     - name: Publish to GitHub Packages
-      run: npm publish
+      run: |
+        cd npm
+        npm publish *.tgz
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
