@@ -56,9 +56,10 @@ jobs:
       working-directory: ${{ env.npm-path }}
       run: npm ci
     - name: Test
-      run: npm test
       working-directory: ${{ env.npm-path }}
+      run: npm test      
     - name: Prepare package
+      working-directory: ${{ env.npm-path }}
       run: |
         mkdir -p package
         find . -maxdepth 1 -name '*' ! -name 'package' -exec cp -r {} package \;
