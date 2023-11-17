@@ -61,14 +61,12 @@ jobs:
     - name: Prepare package
       working-directory: ${{ env.npm-path }}
       run: |
-        mkdir -p package
-        find . -maxdepth 1 -name '*' ! -name 'package' -exec cp -r {} package \;
-        rm -rf package/node_modules
+        npm pack    
     - name: Upload package
       uses: actions/upload-artifact@v3
       with:
         name: npm
-        path: package
+        path: '**/*.tgz'
 
   publish-nuget:
     name: Publish package to NuGet and GitHub Packages
