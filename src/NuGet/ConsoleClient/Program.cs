@@ -19,8 +19,8 @@ Console.WriteLine($"{amount} colones son {colonesAEuros} euros.");
 var eurosAColones = await _converter.EurosToColones(amount);
 Console.WriteLine($"{amount} euros son {eurosAColones} colones.");
 
-var (date, sale, purchase) = await _converter.GetDollarExchangeRate(true);
+var (date, sale, purchase) = await _converter.GetDollarExchangeRate();
 Console.WriteLine($"Dólar - Fecha: {date}, Venta: {sale}, Compra: {purchase}");
 
-var (_date, dollars, colones) = await _converter.GetEuroExchangeRate(true);
+var (_date, dollars, colones) = await _converter.GetEuroExchangeRate();
 Console.WriteLine($"Euro - Fecha: {_date}, Dolares: {dollars}, Colones: {colones}");

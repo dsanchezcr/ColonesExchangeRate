@@ -79,24 +79,24 @@ public class CurrencyConverter
             throw new Exception("Error converting from euros to colones. Details: ", ex);
         }
     }
-    public async Task<(string? date, decimal sale, decimal purchase)> GetDollarExchangeRate(bool includeDate = false)
+    public async Task<(string? date, decimal sale, decimal purchase)> GetDollarExchangeRate()
     {
         try
         {
             var rate = await GetExchangeRate();
-            return includeDate ? (rate?.Dolar?.Venta?.Fecha, rate?.Dolar?.Venta?.Valor ?? 0, rate?.Dolar?.Compra?.Valor ?? 0) : (null, rate?.Dolar?.Venta?.Valor ?? 0, rate?.Dolar?.Compra?.Valor ?? 0);
+            return (rate?.Dolar?.Venta?.Fecha, rate?.Dolar?.Venta?.Valor ?? 0, rate?.Dolar?.Compra?.Valor ?? 0);
         }
         catch (Exception ex)
         {
             throw new Exception("Error trying to get the dollar exchange rate. Details: ", ex);
         }
     }
-    public async Task<(string? date, decimal dollars, decimal colones)> GetEuroExchangeRate(bool includeDate = false)
+    public async Task<(string? date, decimal dollars, decimal colones)> GetEuroExchangeRate()
     {
         try
         {
             var rate = await GetExchangeRate();
-            return includeDate ? (rate?.Euro?.Fecha, rate?.Euro?.Dolares ?? 0, rate?.Euro?.Colones ?? 0) : (null, rate?.Euro?.Dolares ?? 0, rate?.Euro?.Colones ?? 0);
+            return (rate?.Euro?.Fecha, rate?.Euro?.Dolares ?? 0, rate?.Euro?.Colones ?? 0);
         }
         catch (Exception ex)
         {

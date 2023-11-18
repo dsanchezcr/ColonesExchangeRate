@@ -84,7 +84,7 @@ namespace ColonesExchangeRate.Tests
         public async Task GetDollarExchangeRate_ShouldReturnNonNegativeValues()
         {
             // Act
-            var (date, sale, purchase) = await _converter.GetDollarExchangeRate(true);
+            var (date, sale, purchase) = await _converter.GetDollarExchangeRate();
 
             // Assert
             Assert.True(sale > 0);
@@ -95,7 +95,7 @@ namespace ColonesExchangeRate.Tests
         public async Task GetEuroExchangeRate_ShouldReturnNonNegativeValues()
         {
             // Act
-            var (date, dollars, colones) = await _converter.GetEuroExchangeRate(true);
+            var (date, dollars, colones) = await _converter.GetEuroExchangeRate();
 
             // Assert
             Assert.True(dollars > 0);
