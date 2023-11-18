@@ -29,15 +29,17 @@ decimal eurosADolares = await converter.EurosToDollars(amount);
 decimal colonesAEuros = await converter.ColonesToEuros(amount);
 decimal eurosAColones = await converter.EurosToColones(amount);
 // true or false to get the date as part of the exchange rate information.
-(DateTime? date, decimal sale, decimal purchase) dollarExchangeRate = await converter.GetDollarExchangeRate(true); 
-(DateTime? date, decimal dollars, decimal colones) euroExchangeRate = await converter.GetEuroExchangeRate(true);
+(DateTime date, decimal sale, decimal purchase) dollarExchangeRate = await converter.GetDollarExchangeRate(); 
+(DateTime date, decimal dollars, decimal colones) euroExchangeRate = await converter.GetEuroExchangeRate();
 ```
 The result will look similar to this:
 ![Console Result](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/ConsoleResult.jpg)
 
 > Note: Replace amount with the amount of currency you want to convert.
 
-The GetDollarExchangeRate and GetEuroExchangeRate methods return a tuple with three values: the date of the exchange rate, the sale rate, and the purchase rate.
+The following methods return a tuple with three values: 
+- GetDollarExchangeRate: the date of the exchange rate, the sale rate, and the purchase rate.
+- GetEuroExchangeRate: the date of the exchange rate, the dollars rate, and the colones rate.
 
 ## npm Package
 
@@ -48,27 +50,56 @@ npm i @dsanchezcr/colonesexchangerate
 
 ### Usage
 
-To use ColonesExchangeRate, first import the CurrencyConverter class:
+To use ColonesExchangeRate, first import the colonesexchangerate module:
 ```javascript
-import { CurrencyConverter } from '@dsanchezcr/colones-exchange-rate';
+import('@dsanchezcr/colonesexchangerate').then(module => {
+    // Create a new instance of the class
+    const exchangeRateClient = new module.default();
+
+    // Use the methods of the class
+    async function test() {
+        try {
+            const amountInDollars = 100;
+            const amountInColones = await exchangeRateClient.dollarsToColones(amountInDollars);
+            console.log(`$${amountInDollars} is ₡${amountInColones}`);
+
+            const amountInEuros = 100;
+            const amountInDollarsFromEuros = await exchangeRateClient.eurosToDollars(amountInEuros);
+            console.log(`€${amountInEuros} is $${amountInDollarsFromEuros}`);
+
+            const amountInColonesToDollars = await exchangeRateClient.colonesToDollars(amountInColones);
+            console.log(`₡${amountInColones} is $${amountInColonesToDollars}`);
+
+            const amountInDollarsToEuros = await exchangeRateClient.dollarsToEuros(amountInDollars);
+            console.log(`$${amountInDollars} is €${amountInDollarsToEuros}`);
+
+            const amountInEurosToColones = await exchangeRateClient.eurosToColones(amountInEuros);
+            console.log(`€${amountInEuros} is ₡${amountInEurosToColones}`);
+
+            const amountInColonesToEuros = await exchangeRateClient.colonesToEuros(amountInColones);
+            console.log(`₡${amountInColones} is €${amountInColonesToEuros}`);
+
+            const dollarExchangeRate = await exchangeRateClient.getDollarExchangeRate();
+            console.log(`Dollar exchange rate: ${JSON.stringify(dollarExchangeRate)}`);
+
+            const euroExchangeRate = await exchangeRateClient.getEuroExchangeRate();
+            console.log(`Euro exchange rate: ${JSON.stringify(euroExchangeRate)}`);
+        } catch (ex) {
+            console.error(`Error: ${ex.message}`);
+        }
+    }
+
+    test();
+});
 ```
-Then, you can use the following methods to perform currency conversion:
-```javascript
-const converter = new CurrencyConverter();
-const dolaresAColones = await converter.DollarsToColones(amount);
-const colonesADolares = await converter.ColonesToDollars(amount);
-const dolaresAEuros = await converter.DollarsToEuros(amount);
-const eurosADolares = await converter.EurosToDollars(amount);
-const colonesAEuros = await converter.ColonesToEuros(amount);
-const eurosAColones = await converter.EurosToColones(amount);
-// true or false to get the date as part of the exchange rate information.
-const dollarExchangeRate = await converter.GetDollarExchangeRate(true);
-const euroExchangeRate = await converter.GetEuroExchangeRate(true);
-```
+The result will look similar to this:
+![npm console result](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/npmConsoleResult.jpg)
 
 > Note: Replace amount with the amount of currency you want to convert.
 
-The GetDollarExchangeRate and GetEuroExchangeRate methods return a tuple with three values: the date of the exchange rate, the sale rate, and the purchase rate.
+The following methods return a tuple with three values: 
+- getDollarExchangeRate: the date of the exchange rate, the sale rate, and the purchase rate.
+- getEuroExchangeRate: the date of the exchange rate, the dollars rate, and the colones rate.
 
 # Contributing
 Contributions are welcome! To contribute to ColonesExchangeRate, fork the repository and create a pull request with your changes.
