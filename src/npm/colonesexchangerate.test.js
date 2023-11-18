@@ -1,5 +1,5 @@
 import assert from 'assert';
-import colonesexchangerate from './colonesexchangerate.js';
+import colonesexchangerate from './colonesexchangerate.mjs';
 
 let converter = new colonesexchangerate();
 
