@@ -106,7 +106,11 @@ jobs:
         npm publish --access public || echo "Version already exists on npmjs.com"
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
-    
+    - name: Set up Node.js for GitHub Packages
+      uses: actions/setup-node@v4
+      with:
+        node-version: 'latest'
+        registry-url: 'https://npm.pkg.github.com'
     - name: Publish to GitHub Packages
       working-directory: ${{ env.npm-path }}
       run: |
