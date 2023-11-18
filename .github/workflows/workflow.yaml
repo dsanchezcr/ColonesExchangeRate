@@ -60,8 +60,7 @@ jobs:
       run: npm test      
     - name: Prepare package
       working-directory: ${{ env.npm-path }}
-      run: |
-        npm pack    
+      run: npm pack    
     - name: Upload package
       uses: actions/upload-artifact@v3
       with:
@@ -93,17 +92,15 @@ jobs:
     runs-on: ubuntu-latest
     environment: Production
     steps:
-    - name: Download package
-      uses: actions/download-artifact@v3
-      with:
-        name: npm
+    - uses: actions/checkout@v4
     - name: Set up Node.js for npmjs.com
       uses: actions/setup-node@v4
       with:
         node-version: 'latest'
         registry-url: 'https://registry.npmjs.org'
-    - name: Publish to npm/*.tgz
-      run: npm publish *.tgz
+    - name: Publish to npmjs.com
+      working-directory: ${{ env.npm-path }}
+      run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
     - name: Set up Node.js for GitHub Packages
@@ -112,6 +109,7 @@ jobs:
         node-version: 'latest'
         registry-url: 'https://npm.pkg.github.com'
     - name: Publish to GitHub Packages
-      run: npm publish npm/*.tgz
+      working-directory: ${{ env.npm-path }}
+      run: npm publish
       env:
         NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
