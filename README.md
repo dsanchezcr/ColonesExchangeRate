@@ -43,7 +43,7 @@ The GetDollarExchangeRate and GetEuroExchangeRate methods return a tuple with th
 
 To install ColonesExchangeRate using npm, run the following command in the Package Manager Console:
 ```cli
-npm install @dsanchezcr/colones-exchange-rate
+npm i @dsanchezcr/colonesexchangerate
 ```
 
 ### Usage
