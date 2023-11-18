@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 class colonesexchangerate {
   constructor() {
@@ -68,30 +68,31 @@ class colonesexchangerate {
     }
   }
 
-  async getDollarExchangeRate(includeDate = false) {
+  async getDollarExchangeRate() {
     try {
       const rate = await this.getExchangeRate();
       return {
-        date: includeDate ? rate?.dolar?.venta?.fecha : null,
+        date: rate?.dolar?.venta?.fecha || '',
         sale: rate?.dolar?.venta?.valor || 0,
         purchase: rate?.dolar?.compra?.valor || 0
       };
     } catch (ex) {
-      throw new Error(`Error trying to get the dollar exchange rate. Details: ${ex}`);
+      throw new Error(`Error getting dollar exchange rate. Details: ${ex}`);
     }
   }
 
-  async getEuroExchangeRate(includeDate = false) {
+  async getEuroExchangeRate() {
     try {
       const rate = await this.getExchangeRate();
       return {
-        date: includeDate ? rate?.euro?.fecha : null,
-        dollars: rate?.euro?.valor || 0
+        date: rate?.euro?.fecha || '',
+        dollars: rate?.euro?.dolares || 0,
+        colones: rate?.euro?.colones || 0
       };
     } catch (ex) {
-      throw new Error(`Error trying to get the euro exchange rate. Details: ${ex}`);
+      throw new Error(`Error getting euro exchange rate. Details: ${ex}`);
     }
   }
 }
 
-module.exports = colonesexchangerate;
+export default colonesexchangerate;
