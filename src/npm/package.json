@@ -1,6 +1,6 @@
 {
   "name": "@dsanchezcr/colonesexchangerate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Currency conversion from Colones (Costa Rica - CRC ₡) to Dollars (United States - USD $) and Euros (European Union - EUR €). It consumes the exchange rate API from Ministerio de Hacienda de Costa Rica.",
   "main": "currencyconverter.js",
   "scripts": {

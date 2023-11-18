@@ -98,6 +98,8 @@ jobs:
       with:
         node-version: 'latest'
         registry-url: 'https://registry.npmjs.org'
+    - name: Copy README
+      run: cp README.md src/npm/
     - name: Publish to npmjs.com
       working-directory: ${{ env.npm-path }}
       run: npm publish --access public
