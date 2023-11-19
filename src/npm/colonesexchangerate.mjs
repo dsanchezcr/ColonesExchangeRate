@@ -1,98 +1,84 @@
+// Import axios for HTTP requests
 import axios from 'axios';
 
-class colonesexchangerate {
-  constructor() {
-    this.client = axios;
-  }
+// Class to handle exchange rates for Colones
+class ColonesExchangeRate {
+    // Method to get the exchange rate from the API
+    async fetchExchangeRate() {
+        // Fetch the exchange rate from the API
+        const response = await axios.get('https://api.hacienda.go.cr/indicadores/tc');
 
-  async getExchangeRate() {
-    try {
-      const response = await this.client.get('https://api.hacienda.go.cr/indicadores/tc');
-      return response.data;
-    } catch (ex) {
-      throw new Error(`Error trying to get the exchange rate from the API. Details: ${ex}`);
+        // Return the response data
+        return response.data;
     }
-  }
 
-  async dollarsToColones(amount) {
-    try {
-      const rate = await this.getExchangeRate();
-      return (amount * (rate?.dolar?.venta?.valor || 0)).toFixed(2);
-    } catch (ex) {
-      throw new Error(`Error converting from dollars to colones. Details: ${ex}`);
-    }
-  }
+    // Method to convert currency using a provided rate selector
+    async convertCurrency(amount, rateSelector) {
+        // Get the exchange rate
+        const rate = await this.fetchExchangeRate();
 
-  async colonesToDollars(amount) {
-    try {
-      const rate = await this.getExchangeRate();
-      return (amount / (rate?.dolar?.compra?.valor || 0)).toFixed(2);
-    } catch (ex) {
-      throw new Error(`Error converting from colones to dollars. Details: ${ex}`);
+        // Convert the amount using the selected rate and return
+        return amount * rateSelector(rate);
     }
-  }
 
-  async dollarsToEuros(amount) {
-    try {
-      const rate = await this.getExchangeRate();
-      return (amount / (rate?.euro?.dolares || 0)).toFixed(2);
-    } catch (ex) {
-      throw new Error(`Error converting from dollars to euros. Details: ${ex}`);
+    // Methods to convert between different currencies
+    dollarsToColones(amount) {
+        return this.convertCurrency(amount, rate => rate?.dolar?.venta?.valor ?? 0);
     }
-  }
 
-  async eurosToDollars(amount) {
-    try {
-      const rate = await this.getExchangeRate();
-      return (amount * (rate?.euro?.dolares || 0)).toFixed(2);
-    } catch (ex) {
-      throw new Error(`Error converting from euros to dollars. Details: ${ex}`);
+    colonesToDollars(amount) {
+        return this.convertCurrency(amount, rate => 1 / (rate?.dolar?.compra?.valor ?? 1));
     }
-  }
 
-  async colonesToEuros(amount) {
-    try {
-      const rate = await this.getExchangeRate();
-      return (amount / (rate?.euro?.colones || 0)).toFixed(2);
-    } catch (ex) {
-      throw new Error(`Error converting from colones to euros. Details: ${ex}`);
+    dollarsToEuros(amount) {
+        return this.convertCurrency(amount, rate => 1 / (rate?.euro?.dolares ?? parseFloat(rate?.euro?.valor ?? "0")));
     }
-  }
 
-  async eurosToColones(amount) {
-    try {
-      const rate = await this.getExchangeRate();
-      return (amount * (rate?.euro?.colones || 0)).toFixed(2);
-    } catch (ex) {
-      throw new Error(`Error converting from euros to colones. Details: ${ex}`);
+    eurosToDollars(amount) {
+        return this.convertCurrency(amount, rate => rate?.euro?.dolares ?? parseFloat(rate?.euro?.valor ?? "0"));
     }
-  }
 
-  async getDollarExchangeRate() {
-    try {
-      const rate = await this.getExchangeRate();
-      return {
-        date: rate?.dolar?.venta?.fecha || '',
-        sale: rate?.dolar?.venta?.valor || 0,
-        purchase: rate?.dolar?.compra?.valor || 0
-      };
-    } catch (ex) {
-      throw new Error(`Error getting dollar exchange rate. Details: ${ex}`);
+    // Method to convert Colones to Euros
+    colonesToEuros(amount) {
+        return this.convertCurrency(amount, rate => {
+            if (rate?.Euro?.Colones != null)
+                return 1 / rate.Euro.Colones;
+            else
+                return 1 / ((rate?.dolar?.compra?.valor ?? 0) * parseFloat(rate?.euro?.valor ?? "0"));
+        });
     }
-  }
 
-  async getEuroExchangeRate() {
-    try {
-      const rate = await this.getExchangeRate();
-      return {
-        date: rate?.euro?.fecha || '',
-        dollars: rate?.euro?.dolares || 0,
-        colones: rate?.euro?.colones || 0
-      };
-    } catch (ex) {
-      throw new Error(`Error getting euro exchange rate. Details: ${ex}`);
+    // Method to convert Euros to Colones
+    eurosToColones(amount) {
+        return this.convertCurrency(amount, rate => {
+            if (rate?.Euro?.Colones != null)
+                return rate.Euro.Colones;
+            else {
+                return (parseFloat(rate?.euro?.valor ?? "0") * (rate?.dolar?.venta?.valor ?? 0));
+            }
+        });
     }
-  }
+
+    // Method to get the dollar exchange rate
+    async getDollarExchangeRate() {
+        const rate = await this.fetchExchangeRate();
+        return {
+            date: rate?.dolar?.venta?.fecha,
+            sale: rate?.dolar?.venta?.valor ?? 0,
+            purchase: rate?.dolar?.compra?.valor ?? 0
+        };
+    }
+
+    // Method to get the euro exchange rate
+    async getEuroExchangeRate() {
+        const rate = await this.fetchExchangeRate();
+        return {
+            date: rate?.euro?.fecha,
+            dollars: rate?.euro?.dolares ?? parseFloat(rate?.euro?.valor ?? "0"),
+            colones: rate?.euro?.colones
+        };
+    }
 }
 
-export default colonesexchangerate;
+// Export the class as a module
+export default ColonesExchangeRate;

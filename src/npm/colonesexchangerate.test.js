@@ -1,11 +1,11 @@
 import assert from 'assert';
-import colonesexchangerate from './colonesexchangerate.mjs';
+import ColonesExchangeRate from './colonesexchangerate.mjs';
 
-let converter = new colonesexchangerate();
+let converter = new ColonesExchangeRate();
 
 async function runTests() {
   try {
-    const amount = 100;
+    const amount = 1000;
     let result = await converter.dollarsToColones(amount);
     console.log(`Dollars to colones: ${result}`);
     assert(Number(result) > 0, 'Dollars to colones conversion result should be greater than 0');
