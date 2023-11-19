@@ -8,7 +8,7 @@ This repository contains a NuGet & npm packages to provide currency conversion f
 ![](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/Icon.png)
 
 # Installation
-You can install the ColonesExchangeRate package from [NuGet.org](https://www.npmjs.com/package/@dsanchezcr/colonesexchangerate), [npmjs.com](https://www.npmjs.com/package/@dsanchezcr/colonesexchangerate) or [GitHub Packages](https://github.com/dsanchezcr?tab=packages&repo_name=ColonesExchangeRate).
+You can install the ColonesExchangeRate package from [NuGet.org](https://www.nuget.org/packages/ColonesExchangeRate), [npmjs.com](https://www.npmjs.com/package/@dsanchezcr/colonesexchangerate) or [GitHub Packages](https://github.com/dsanchezcr?tab=packages&repo_name=ColonesExchangeRate).
 
 
 ## NuGet Package
