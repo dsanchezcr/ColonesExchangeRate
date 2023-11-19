@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
@@ -13,11 +12,10 @@
     <PackageTags>colones; dollars; euros; currency-exchange; exchange-rate; costa-rica; CRC;</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/dsanchezcr/ColonesExchangeRate</PackageProjectUrl>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <Version>2.0.0</Version>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
     <Description>Currency conversion from Colones (Costa Rica - CRC ₡) to Dollars (United States - USD $) and Euros (European Union - EUR €). It consumes the exchange rate API from Ministerio de Hacienda de Costa Rica.</Description>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\..\..\images\Icon.png">
       <Pack>True</Pack>
@@ -32,9 +30,7 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Text.Json" Version="7.0.3" />
   </ItemGroup>
-
 </Project>
