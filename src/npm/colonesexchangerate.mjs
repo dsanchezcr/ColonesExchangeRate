@@ -41,8 +41,8 @@ class ColonesExchangeRate {
     // Method to convert Colones to Euros
     colonesToEuros(amount) {
         return this.convertCurrency(amount, rate => {
-            if (rate?.Euro?.Colones != null)
-                return 1 / rate.Euro.Colones;
+            if (rate?.euro?.colones != null)
+                return 1 / rate.euro.colones;
             else
                 return 1 / ((rate?.dolar?.compra?.valor ?? 0) * parseFloat(rate?.euro?.valor ?? "0"));
         });
@@ -51,8 +51,8 @@ class ColonesExchangeRate {
     // Method to convert Euros to Colones
     eurosToColones(amount) {
         return this.convertCurrency(amount, rate => {
-            if (rate?.Euro?.Colones != null)
-                return rate.Euro.Colones;
+            if (rate?.euro?.colones != null)
+                return rate.euro.colones;
             else {
                 return (parseFloat(rate?.euro?.valor ?? "0") * (rate?.dolar?.venta?.valor ?? 0));
             }
