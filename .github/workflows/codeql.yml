@@ -9,6 +9,9 @@ on:
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
+
+permissions: read-all
+
 jobs:
   analyze:
     name: Analyze
