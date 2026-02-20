@@ -1,14 +1,17 @@
-﻿var converter = new ColonesExchangeRate();
+﻿using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+
+// Create a converter with 5-minute caching to avoid redundant API calls
+var converter = new ColonesExchangeRate(TimeSpan.FromMinutes(5));
 var amount = 1000;
 
-decimal dollarsToColones = await converter.DollarsToColones(amount);
-decimal colonesToDollars = await converter.ColonesToDollars(amount);
-decimal dollarsToEuros = await converter.DollarsToEuros(amount);
-decimal eurosToDollars = await converter.EurosToDollars(amount);
-decimal colonesToEuros = await converter.ColonesToEuros(amount);
-decimal eurosToColones = await converter.EurosToColones(amount);
-var dollarExchangeRate = await converter.GetDollarExchangeRate();
-var euroExchangeRate = await converter.GetEuroExchangeRate();
+decimal dollarsToColones = await converter.DollarsToColones(amount, cts.Token);
+decimal colonesToDollars = await converter.ColonesToDollars(amount, cts.Token);
+decimal dollarsToEuros = await converter.DollarsToEuros(amount, cts.Token);
+decimal eurosToDollars = await converter.EurosToDollars(amount, cts.Token);
+decimal colonesToEuros = await converter.ColonesToEuros(amount, cts.Token);
+decimal eurosToColones = await converter.EurosToColones(amount, cts.Token);
+var dollarExchangeRate = await converter.GetDollarExchangeRate(cts.Token);
+var euroExchangeRate = await converter.GetEuroExchangeRate(cts.Token);
 
 Console.WriteLine($"{amount} Dollars = {dollarsToColones} Colones");
 Console.WriteLine($"{amount} Colones = {colonesToDollars} Dollars");
