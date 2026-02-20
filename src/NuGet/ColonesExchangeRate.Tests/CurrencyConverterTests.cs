@@ -216,7 +216,8 @@ public class CurrencyConverterUnitTests
         using var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        await Assert.ThrowsAsync<OperationCanceledException>(() => converter.DollarsToColones(10, cts.Token));
+        // HttpClient throws TaskCanceledException (subclass of OperationCanceledException) on cancellation
+        await Assert.ThrowsAsync<TaskCanceledException>(() => converter.DollarsToColones(10, cts.Token));
     }
 }
 
