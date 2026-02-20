@@ -88,15 +88,13 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: '10.0.x'
-    - name: Get NuGet OIDC token
-      id: nuget-oidc
-      run: |
-        token=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://NuGetTrustedPublisher" | jq -r '.value')
-        echo "::add-mask::$token"
-        echo "token=$token" >> "$GITHUB_OUTPUT"
+    - name: NuGet Trusted Publishing login
+      uses: NuGet/login@v1
+      id: nuget-login
+      with:
+        user: dsanchezcr
     - name: Publish to NuGet.org
-      run: dotnet nuget push **/*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-oidc.outputs.token }}
+      run: dotnet nuget push **/*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
     - name: Authenticating to GitHub Packages
       run: dotnet nuget add source --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dsanchezcr/index.json"
     - name: Publish to GitHub Packages
@@ -111,6 +109,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: write
     steps:
     - uses: actions/checkout@v6
     - name: Set up Node.js for npmjs.com
