@@ -13,6 +13,8 @@ on:
       - '.github/**'
   workflow_dispatch:
 
+permissions: read-all
+
 env:
   npm-path: ./src/npm
   nuget-sln-path: 'src/NuGet/ColonesExchangeRate.sln'
@@ -24,11 +26,11 @@ jobs:
     name: Build & Test NuGet package
     runs-on: ubuntu-latest      
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '10.0.x'
     - name: Restore dependencies
       run: dotnet restore ${{ env.nuget-sln-path }}
     - name: Build solution
@@ -36,9 +38,9 @@ jobs:
     - name: Build package
       run: dotnet pack ${{ env.nuget-project-path }} --configuration ${{ env.configuration }}
     - name: Run tests
-      run: dotnet test ${{ env.nuget-sln-path }}
+      run: dotnet test ${{ env.nuget-sln-path }} --collect:"XPlat Code Coverage" --filter "Category!=Integration"
     - name: Upload package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       with:
         name: NuGet
         path: '**/*.nupkg'
@@ -47,22 +49,22 @@ jobs:
     name: Build & Test npm package
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 'latest'
+        node-version: '22'
     - name: Install dependencies
       working-directory: ${{ env.npm-path }}
       run: npm ci
     - name: Test
       working-directory: ${{ env.npm-path }}
-      run: npm test      
+      run: npm test
     - name: Prepare package
       working-directory: ${{ env.npm-path }}
-      run: npm pack    
+      run: npm pack
     - name: Upload package
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v6
       with:
         name: npm
         path: '**/*.tgz'
@@ -73,15 +75,30 @@ jobs:
     needs: build-test-nuget
     runs-on: ubuntu-latest
     environment: Production
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
     steps:
     - name: Download package
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v7
       with:
         name: NuGet
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: '10.0.x'
+    - name: Get NuGet OIDC token
+      id: nuget-oidc
+      run: |
+        token=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://NuGetTrustedPublisher" | jq -r '.value')
+        echo "::add-mask::$token"
+        echo "token=$token" >> "$GITHUB_OUTPUT"
     - name: Publish to NuGet.org
-      run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push **/*.nupkg --skip-duplicate --source https://api.nuget.org/v3/index.json --api-key ${{ steps.nuget-oidc.outputs.token }}
     - name: Authenticating to GitHub Packages
-      run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dsanchezcr/index.json"
+      run: dotnet nuget add source --username ${{ github.actor }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/dsanchezcr/index.json"
     - name: Publish to GitHub Packages
       run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
 
@@ -91,25 +108,26 @@ jobs:
     needs: build-test-npm
     runs-on: ubuntu-latest
     environment: Production
+    permissions:
+      contents: read
+      id-token: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Node.js for npmjs.com
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 'latest'
+        node-version: '22'
         registry-url: 'https://registry.npmjs.org'
     - name: Copy README
       run: cp README.md src/npm/
     - name: Publish to npmjs.com
       working-directory: ${{ env.npm-path }}
       run: |
-        npm publish --access public || echo "Version already exists on npmjs.com"
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_API_KEY }}
+        npm publish --access public --provenance || echo "Version already exists on npmjs.com"
     - name: Set up Node.js for GitHub Packages
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 'latest'
+        node-version: '22'
         registry-url: 'https://npm.pkg.github.com'
     - name: Publish to GitHub Packages
       working-directory: ${{ env.npm-path }}

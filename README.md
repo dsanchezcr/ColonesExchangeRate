@@ -4,8 +4,15 @@ This repository contains a NuGet & npm packages to provide currency conversion f
 > Note: The API usually changes the response for the Euro exchange rate, during business hours, the response contains the exchange rate in dollars and colones, but after business hours, the response only contains the exchange rate in dollars. The ColonesExchangeRate packages handles this situation and returns the correct values.
 
 [![ColonesExchangeRate - CI/CD](https://github.com/dsanchezcr/ColonesExchangeRate/actions/workflows/workflow.yaml/badge.svg)](https://github.com/dsanchezcr/ColonesExchangeRate/actions/workflows/workflow.yaml)
+[![NuGet](https://img.shields.io/nuget/v/ColonesExchangeRate)](https://www.nuget.org/packages/ColonesExchangeRate)
+[![npm](https://img.shields.io/npm/v/@dsanchezcr/colonesexchangerate)](https://www.npmjs.com/package/@dsanchezcr/colonesexchangerate)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ![](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/Icon.png)
+
+## Prerequisites
+- **NuGet**: .NET Standard 2.1 compatible runtime (e.g. .NET Core 3.0+, .NET 5+)
+- **npm**: Node.js 18.0.0 or later
 
 # Installation
 You can install the ColonesExchangeRate package from [NuGet.org](https://www.nuget.org/packages/ColonesExchangeRate), [npmjs.com](https://www.npmjs.com/package/@dsanchezcr/colonesexchangerate) or [GitHub Packages](https://github.com/dsanchezcr?tab=packages&repo_name=ColonesExchangeRate).
@@ -45,14 +52,33 @@ if (euroExchangeRate.colones != null)
 else
     Console.WriteLine($"Euro exchange rate: {euroExchangeRate.date} - Dollars: {euroExchangeRate.dollars}");
 ```
+
+#### Caching (Optional)
+To avoid redundant API calls when performing multiple conversions, enable caching:
+
+```csharp
+// Cache exchange rates for 5 minutes
+var converter = new ColonesExchangeRate(TimeSpan.FromMinutes(5));
+```
+
+#### CancellationToken Support
+All methods accept an optional `CancellationToken`:
+
+```csharp
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+var result = await converter.DollarsToColones(100, cts.Token);
+```
+
+#### Custom HttpClient
+You can inject your own `HttpClient` (e.g. for use with `IHttpClientFactory`):
+
+```csharp
+var converter = new ColonesExchangeRate(httpClient, TimeSpan.FromMinutes(5));
+```
 The result will look similar to this:
 ![Console Result](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/ConsoleResult.jpg)
 
 > Note: Replace amount with the amount of currency you want to convert.
-
-The following methods return a tuple with three values: 
-- GetDollarExchangeRate: the date of the exchange rate, the sale rate, and the purchase rate.
-- GetEuroExchangeRate: the date of the exchange rate, the dollars rate, and the colones rate.
 
 ## npm Package
 
@@ -64,56 +90,74 @@ npm i @dsanchezcr/colonesexchangerate
 
 ### Usage
 
-To use ColonesExchangeRate, first import the colonesexchangerate module:
+To use ColonesExchangeRate, import the module:
 ```javascript
-import('@dsanchezcr/colonesexchangerate').then(module => {
-     // Create a new instance of the class
-    const exchangeRateClient = new module.default();
-    // Use the methods of the class
-    async function test() {
-        try {
-            const amount = 1000;
-            const amountInColones = await exchangeRateClient.dollarsToColones(amount);
-            console.log(`$${amount} is ₡${amountInColones}`);
+import ColonesExchangeRate from '@dsanchezcr/colonesexchangerate';
 
-            const amountInColonesToDollars = await exchangeRateClient.colonesToDollars(amount);
-            console.log(`₡${amount} is $${amountInColonesToDollars}`);
+const converter = new ColonesExchangeRate();
+const amount = 1000;
 
-            const amountInDollarsToEuros = await exchangeRateClient.dollarsToEuros(amount);
-            console.log(`$${amount} is €${amountInDollarsToEuros}`);
+const amountInColones = await converter.dollarsToColones(amount);
+console.log(`$${amount} is ₡${amountInColones}`);
 
-            const amountInDollarsFromEuros = await exchangeRateClient.eurosToDollars(amount);
-            console.log(`€${amount} is $${amountInDollarsFromEuros}`);
+const amountInDollars = await converter.colonesToDollars(amount);
+console.log(`₡${amount} is $${amountInDollars}`);
 
-            const amountInColonesToEuros = await exchangeRateClient.colonesToEuros(amount);
-            console.log(`₡${amount} is €${amountInColonesToEuros}`);
+const amountInEuros = await converter.dollarsToEuros(amount);
+console.log(`$${amount} is €${amountInEuros}`);
 
-            const amountInEurosToColones = await exchangeRateClient.eurosToColones(amount);
-            console.log(`€${amount} is ₡${amountInEurosToColones}`);
+const amountFromEuros = await converter.eurosToDollars(amount);
+console.log(`€${amount} is $${amountFromEuros}`);
 
-            const dollarExchangeRate = await exchangeRateClient.getDollarExchangeRate();
-            console.log(`Dollar exchange rate: ${JSON.stringify(dollarExchangeRate)}`);
+const colonesToEuros = await converter.colonesToEuros(amount);
+console.log(`₡${amount} is €${colonesToEuros}`);
 
-            const euroExchangeRate = await exchangeRateClient.getEuroExchangeRate();
-            console.log(`Euro exchange rate: ${JSON.stringify(euroExchangeRate)}`);
-        } catch (ex) {
-            console.error(`Error: ${ex.message}`);
-        }
-    }
-    test();
-});
+const eurosToColones = await converter.eurosToColones(amount);
+console.log(`€${amount} is ₡${eurosToColones}`);
+
+const dollarRate = await converter.getDollarExchangeRate();
+console.log(`Dollar exchange rate: ${JSON.stringify(dollarRate)}`);
+
+const euroRate = await converter.getEuroExchangeRate();
+console.log(`Euro exchange rate: ${JSON.stringify(euroRate)}`);
 ```
+
+#### Caching (Optional)
+To avoid redundant API calls when performing multiple conversions, enable caching:
+
+```javascript
+// Cache exchange rates for 5 minutes
+const converter = new ColonesExchangeRate({ cacheTtlMs: 300000 });
+```
+
+#### TypeScript
+The package includes TypeScript type definitions out of the box — no `@types` package needed.
 The result will look similar to this:
 ![npm console result](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/npmConsoleResult.jpg)
 
 > Note: Replace amount with the amount of currency you want to convert.
 
-The following methods return a tuple with three values: 
-- getDollarExchangeRate: the date of the exchange rate, the sale rate, and the purchase rate.
-- getEuroExchangeRate: the date of the exchange rate, the dollars rate, and the colones rate.
+The following methods return an object/tuple with exchange rate details: 
+- `getDollarExchangeRate` / `GetDollarExchangeRate`: the date of the exchange rate, the sale rate, and the purchase rate.
+- `getEuroExchangeRate` / `GetEuroExchangeRate`: the date of the exchange rate, the dollars rate, and the colones rate.
+
+# API Reference
+
+| Method | Parameters | Returns | Description |
+|--------|-----------|---------|-------------|
+| `DollarsToColones` / `dollarsToColones` | `amount` | `decimal` / `number` | Converts USD to CRC |
+| `ColonesToDollars` / `colonesToDollars` | `amount` | `decimal` / `number` | Converts CRC to USD |
+| `DollarsToEuros` / `dollarsToEuros` | `amount` | `decimal` / `number` | Converts USD to EUR |
+| `EurosToDollars` / `eurosToDollars` | `amount` | `decimal` / `number` | Converts EUR to USD |
+| `ColonesToEuros` / `colonesToEuros` | `amount` | `decimal` / `number` | Converts CRC to EUR |
+| `EurosToColones` / `eurosToColones` | `amount` | `decimal` / `number` | Converts EUR to CRC |
+| `GetDollarExchangeRate` / `getDollarExchangeRate` | — | `(date, sale, purchase)` / `{date, sale, purchase}` | Gets current USD/CRC rate |
+| `GetEuroExchangeRate` / `getEuroExchangeRate` | — | `(date, dollars, colones)` / `{date, dollars, colones}` | Gets current EUR rate |
+
+> All NuGet methods also accept an optional `CancellationToken` parameter.
 
 # Contributing
-Contributions are welcome! To contribute to ColonesExchangeRate, fork the repository and create a pull request with your changes.
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing instructions, and guidelines.
 
 # License
 ColonesExchangeRate is licensed under the MIT License. See the [LICENSE](/LICENSE) file for details.
