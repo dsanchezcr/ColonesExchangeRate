@@ -60,11 +60,9 @@ public class ColonesExchangeRate
             return _cachedRate;
         }
 
-        var response = await _client.GetStringAsync("https://api.hacienda.go.cr/indicadores/tc"
-#if !NETSTANDARD2_1
-            , cancellationToken
-#endif
-        );
+        using var responseMessage = await _client.GetAsync("https://api.hacienda.go.cr/indicadores/tc", cancellationToken);
+        responseMessage.EnsureSuccessStatusCode();
+        var response = await responseMessage.Content.ReadAsStringAsync();
 
         var rate = JsonSerializer.Deserialize<ConversionRate>(response, jsonOptions);
 

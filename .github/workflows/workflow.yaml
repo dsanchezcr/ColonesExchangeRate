@@ -13,6 +13,8 @@ on:
       - '.github/**'
   workflow_dispatch:
 
+permissions: read-all
+
 env:
   npm-path: ./src/npm
   nuget-sln-path: 'src/NuGet/ColonesExchangeRate.sln'
@@ -36,7 +38,7 @@ jobs:
     - name: Build package
       run: dotnet pack ${{ env.nuget-project-path }} --configuration ${{ env.configuration }}
     - name: Run tests
-      run: dotnet test ${{ env.nuget-sln-path }} --collect:"XPlat Code Coverage"
+      run: dotnet test ${{ env.nuget-sln-path }} --collect:"XPlat Code Coverage" --filter "Category!=Integration"
     - name: Upload package
       uses: actions/upload-artifact@v6
       with:

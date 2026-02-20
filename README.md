@@ -11,7 +11,7 @@ This repository contains a NuGet & npm packages to provide currency conversion f
 ![](https://raw.githubusercontent.com/dsanchezcr/ColonesExchangeRate/main/images/Icon.png)
 
 ## Prerequisites
-- **NuGet**: .NET 10.0 or later (library targets .NET Standard 2.1)
+- **NuGet**: .NET Standard 2.1 compatible runtime (e.g. .NET Core 3.0+, .NET 5+)
 - **npm**: Node.js 18.0.0 or later
 
 # Installation

@@ -16,6 +16,7 @@ public class MockHttpHandler : DelegatingHandler
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(_responseJson, System.Text.Encoding.UTF8, "application/json")
@@ -209,15 +210,13 @@ public class CurrencyConverterUnitTests
     }
 
     [Fact]
-    public async Task CancellationToken_IsPassed()
+    public async Task CancellationToken_IsRespected()
     {
-        var cts = new CancellationTokenSource();
+        var converter = CreateConverter(FullApiResponse);
+        using var cts = new CancellationTokenSource();
         cts.Cancel();
 
-        var converter = CreateConverter(FullApiResponse);
-        // On netstandard2.1, CancellationToken is not passed to GetStringAsync,
-        // so this test verifies the parameter is accepted without error on all platforms.
-        // On net8.0+, it would throw OperationCanceledException.
+        await Assert.ThrowsAsync<OperationCanceledException>(() => converter.DollarsToColones(10, cts.Token));
     }
 }
 

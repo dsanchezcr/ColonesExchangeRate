@@ -32,7 +32,7 @@ describe('ColonesExchangeRate - Unit Tests', () => {
     });
 });
 
-describe('ColonesExchangeRate - Integration Tests', () => {
+describe('ColonesExchangeRate - Integration Tests', { skip: !process.env.RUN_INTEGRATION_TESTS }, () => {
     const converter = new ColonesExchangeRate();
     const amount = 1000;
 
