@@ -42,6 +42,9 @@
   },
   "homepage": "https://dsanchezcr.github.io/ColonesExchangeRate",
   "dependencies": {
-    "axios": "^1.14.0"
+    "axios": "^1.18.1"
+  },
+  "overrides": {
+    "form-data": "^4.0.6"
   }
 }
